@@ -26,6 +26,7 @@ public class Juego extends InterfaceJuego {
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Delivery Rush - Programacion I UNGS", 800, 600);
 		this.repartidor = new Repartidor(400, 500);
+		this.ciudad = new Ciudad();
 		this.entorno.iniciar();
 	}
 
@@ -36,6 +37,11 @@ public class Juego extends InterfaceJuego {
 	 * (ver el enunciado del TP para mayor detalle).
 	 */
 	public void tick() {
+		entorno.dibujarRectangulo(400, 300, 800, 600, 0, new Color(60, 60, 60));
+		if (this.ciudad != null) {
+			this.ciudad.dibujarse(this.entorno);
+		}
+		
 		// Control por teclado en Juego:
 		if (entorno.estaPresionada('w') || entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
 		    repartidor.moverArriba();
