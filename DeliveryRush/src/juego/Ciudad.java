@@ -1,6 +1,5 @@
-package juego;
 
-
+import java.awt.Image;
 import java.util.Random;
 import entorno.Entorno;
 
@@ -19,20 +18,22 @@ public class Ciudad {
     private static final double ANCHO_ELEMENTO = ANCHO_CUADRA / 2.0; // 80.0
     private static final double ALTO_ELEMENTO = ALTO_CUADRA / 2.0;  // 49.0
     
+    
     private static final double Y_INICIO_MAPA = 32.0; 
 
     private Casa[] casas;
     private Negocio[] negocios;
    
 	private Random random;
+	private Image fondoCuadra;
 	
 	
     public Ciudad() {
     	this.random = new Random();
         this.casas = new Casa[48];
         this.negocios = new Negocio[16];
-       
-        generarCiudad();
+        this.fondoCuadra = entorno.Herramientas.cargarImagen("juego/fondo_casas.png");
+                generarCiudad();
     }
 
     private void generarCiudad() {
@@ -54,6 +55,7 @@ public class Ciudad {
 
     	        for (int subFila = 0; subFila < 2; subFila++) {
     	            for (int subCol = 0; subCol < 2; subCol++) {
+    	            	
     	                double posX = inicioX + (subCol * ANCHO_ELEMENTO) + (ANCHO_ELEMENTO / 2.0);
     	                double posY = inicioY + (subFila * ALTO_ELEMENTO) + (ALTO_ELEMENTO / 2.0);
 
@@ -76,17 +78,9 @@ public class Ciudad {
     	                    } else {
     	                        tipo = 2;
     	                    }
-    	                    
-    	                    double altoFinal;
-    	                    double posYFinal;
+    	                    double altoFinal = ALTO_ELEMENTO;       
+                            double posYFinal = posY;                
 
-    	                    if (tipo == 1) {
-    	                        altoFinal = ALTO_ELEMENTO * 0.8; // Más baja (80% del alto)
-    	                        posYFinal = posY - 5;            // La subimos un poquito para que no flote
-    	                    } else {
-    	                        altoFinal = ALTO_ELEMENTO;       // Alto normal
-    	                        posYFinal = posY;                // Posición normal
-    	                    }
 
     	                    // 3. Creamos la casa con los datos finales y avanzamos el contador
     	                    this.casas[c] = new Casa(posX, posYFinal, ANCHO_ELEMENTO, altoFinal, contadorPosicion, tipo);
@@ -102,6 +96,22 @@ public class Ciudad {
     	}
     	}
     public void dibujarse(Entorno entorno ) {
+    	double anchoOrig=310.0;
+    	
+    	        // Calculamos el centro geométrico exacto de la manzana completa
+    	        double escala = ANCHO_CALLE /anchoOrig ;
+           
+    	        
+    	         for (int fila = 0; fila < FILAS_CUADRAS; fila++) {
+    	    	    for (int col = 0; col < COLUMNAS_CUADRAS; col++) {
+    	    	        // Calculamos el centro geométrico exacto de la manzana completa
+    	    	        double centroCuadraX = ANCHO_CALLE + (col * (ANCHO_CUADRA + ANCHO_CALLE)) + (ANCHO_CUADRA / 2.0);
+    	    	        double centroCuadraY = Y_INICIO_MAPA + (fila * (ALTO_CUADRA + ALTO_CALLE)) + (ALTO_CUADRA / 2.0);
+    	    	        
+    	    	        // CORRECCIÓN: Dibujamos la imagen aplicando la escala X e Y calculadas para que no sea gigante
+    	    	        entorno.dibujarImagen(this.fondoCuadra, centroCuadraX, centroCuadraY, 0,escala );
+    	    	    }
+    	    	}
     	
         for (int i = 0; i < casas.length; i++) {
             if (casas[i] != null) {
@@ -114,7 +124,7 @@ public class Ciudad {
             }
         }
     }
-    public boolean hayColision(double x, double y, double ancho, double alto) {
+    public boolean hayColisiones(double x, double y, double ancho, double alto) {
     	 // Colisión con Casas (Revisa los bordes del personaje vs bordes de las casas)
         for (int i = 0; i < casas.length; i++) {
             Casa c = casas[i];
@@ -148,9 +158,4 @@ public class Ciudad {
 
 	
 
-}
-
-	// - obtenerCasaAleatoria()
-	// - obtenerNegocioAleatorio()
-	// - getters y setters
 }
