@@ -15,8 +15,8 @@ public class Repartidor {
 	//imagenes de estado
 	private final Image arriba = entorno.Herramientas.cargarImagen("juego/repartidor_arriba.png");
 	private final Image abajo = entorno.Herramientas.cargarImagen("juego/repartidor_abajo.png");
-	private final Image derecha = entorno.Herramientas.cargarImagen("juego/repartidor_derecha.png");
-	private final Image izquierda = entorno.Herramientas.cargarImagen("juego/repartidor_izquierda.png");
+	private final Image derecha = entorno.Herramientas.cargarImagen("juego/repartidor_izquierda.png");//esaba al reves 
+	private final Image izquierda = entorno.Herramientas.cargarImagen("juego/repartidor_derecha.png");
 	//tamaño del repartidor
 	private double escala;
 	
@@ -29,39 +29,49 @@ public class Repartidor {
 		this.vidas=3;
 		this.estadosRepartidos=this.derecha;
 	    this.ultimaDireccion = 3;  
-		
+	    this.ancho = 21.0;
+	    this.alto = 21.0;
+	    
 	}
-	public void moverArriba() {
+	public void moverArriba(Ciudad ciudad ) {
 	    this.ultimaDireccion = 0;
 	    this.estadosRepartidos = this.arriba;
-	    if (this.y - this.velocidad > 20) {
-	        this.y -= this.velocidad;
+	  
+	    Double nuevo_y = this.y - this.velocidad;
+	   
+	    if(nuevo_y > 16 && !ciudad.hayColisiones(x, nuevo_y, ancho, alto)) {
+	    	this.y=nuevo_y;
+	    	
 	    }
 	}
 
-	public void moverAbajo() {
+	public void moverAbajo(Ciudad ciudad) {
 	    this.ultimaDireccion = 1;
 	    this.estadosRepartidos = this.abajo;
-	    if (this.y + this.velocidad < 580) {
-	        this.y += this.velocidad;
+	    double nuevo_y = this.y + this.velocidad;
+	    if (nuevo_y < 580 && !ciudad.hayColisiones(this.x, nuevo_y, this.ancho, this.alto)) {
+	        this.y = nuevo_y;
 	    }
 	}
 
-	public void moverIzquierda() {
+	public void moverIzquierda(Ciudad ciudad) {
 	    this.ultimaDireccion = 2;
 	    this.estadosRepartidos = this.izquierda;
-	    if (this.x - this.velocidad > 20) {
-	        this.x -= this.velocidad;
+	    double nuevo_x = this.x - this.velocidad;
+	    if (nuevo_x > 16 &&!ciudad.hayColisiones(nuevo_x, this.y, this.ancho, this.alto)) {
+	        this.x = nuevo_x;
 	    }
 	}
 
-	public void moverDerecha() {
+	public void moverDerecha(Ciudad ciudad) {
 	    this.ultimaDireccion = 3;
 	    this.estadosRepartidos = this.derecha;
-	    if (this.x + this.velocidad < 780) {
-	        this.x += this.velocidad;
+	    double nuevo_x = this.x + this.velocidad;
+	    if (nuevo_x < 784  && !ciudad.hayColisiones(nuevo_x, this.y, this.ancho, this.alto)) {
+	        this.x = nuevo_x;
 	    }
 	}
+
 	public void dibujarse(Entorno entorno) {
 	    entorno.dibujarImagen(this.estadosRepartidos, this.x, this.y, 0, this.escala);
 	}
@@ -77,5 +87,6 @@ public class Repartidor {
 	public int getUltimaDireccion() {
 	    return this.ultimaDireccion;
 	}
+	
 
 }
