@@ -5,10 +5,8 @@ import entorno.Entorno;
 import entorno.InterfaceJuego;
 
 public class Juego extends InterfaceJuego {
-	// El objeto Entorno que controla el tiempo y otros
 	private Entorno entorno;
 
-	// Variables y métodos propios de cada grupo (atributos privados a usar)
 	private Ciudad ciudad;
 	private Repartidor repartidor;
 	private Enemigo[] enemigos;
@@ -25,8 +23,13 @@ public class Juego extends InterfaceJuego {
 	Juego() {
 		// Inicializa el objeto entorno
 		this.entorno = new Entorno(this, "Delivery Rush - Programacion I UNGS", 800, 600);
+
 		this.repartidor = new Repartidor(400, 500);
 		this.ciudad = new Ciudad();
+		
+		
+		
+		// Inicia el juego!
 		this.entorno.iniciar();
 	}
 
@@ -38,26 +41,25 @@ public class Juego extends InterfaceJuego {
 	 */
 	public void tick() {
 		entorno.dibujarRectangulo(400, 300, 800, 600, 0, new Color(60, 60, 60));
-		if (this.ciudad != null) {
-			this.ciudad.dibujarse(this.entorno);
-		}
-		
+		ciudad.dibujarse(entorno);     
+		repartidor.dibujarse(entorno);
+
 		// Control por teclado en Juego:
 		if (entorno.estaPresionada('w') || entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
-		    repartidor.moverArriba();
+		    repartidor.moverArriba(ciudad);
 		}
 		if (entorno.estaPresionada('s') || entorno.estaPresionada(entorno.TECLA_ABAJO)) {
-		    repartidor.moverAbajo();
+		    repartidor.moverAbajo(ciudad);
 		}
 		if (entorno.estaPresionada('a') || entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-		    repartidor.moverIzquierda();
+		    repartidor.moverIzquierda(ciudad);
 		}
 		if (entorno.estaPresionada('d') || entorno.estaPresionada(entorno.TECLA_DERECHA)) {
-		    repartidor.moverDerecha();
+		    repartidor.moverDerecha(ciudad);
 		}
 
 		// Dibujar en pantalla:
-		repartidor.dibujarse(this.entorno);
+		//repartidor.dibujarse(this.entorno);
 		// 1. DISPARAR (Clic izquierdo del mouse y solo si no hay otro proyectil volando)
 		if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)) {
 		    if (this.proyectil == null) {
