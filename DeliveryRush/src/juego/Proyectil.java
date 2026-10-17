@@ -9,7 +9,7 @@ public class Proyectil {
     private int direccion; // 0: arriba, 1: abajo, 2: izquierda, 3: derecha
     private double escala;
     
-    // Imágenes
+    //imagenes
     private final Image arriba = entorno.Herramientas.cargarImagen("juego/proyectil_arriba.png");
     private final Image abajo = entorno.Herramientas.cargarImagen("juego/proyectil_abajo.png");
     private final Image derecha = entorno.Herramientas.cargarImagen("juego/proyectil_derecha.png");
@@ -22,10 +22,10 @@ public class Proyectil {
         this.x = x;
         this.y = y;
         this.direccion = direccion;
-        this.velocidad = 5.5; // Más rápido que el repartidor
-        this.escala = 0.08;   // Tamaño para que mida unos ~15 px
+        this.velocidad = 5.5;
+        this.escala = 0.08;
 
-        // Seleccionamos la imagen fija según la dirección de disparo:
+        //imagen segun direccion
         if (this.direccion == 0) {
             this.imagenActual = this.arriba;
         } else if (this.direccion == 1) {
@@ -53,4 +53,13 @@ public class Proyectil {
     public boolean fueraDeLimites(Entorno entorno) {
         return (this.x < 0 || this.x > entorno.ancho() || this.y < 0 || this.y > entorno.alto());
     }
+    
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
+    }
 }
+
