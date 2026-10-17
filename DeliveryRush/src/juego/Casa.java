@@ -33,13 +33,11 @@ public class Casa {
 		}
 	}
 
-	// Métodos a implementar:
-	
 	
 	// - dibujarse(Entorno entorno)
 	   public void dibujarse(Entorno entorno) {
 		    if (this.imagenTecho != null) {//redimensiona la imagen proporcionalmente para que no se deforme 
-		      double factorEscala = (this.ancho * 0.65) / this.imagenTecho.getWidth(null);
+		      double factorEscala = (this.ancho * 0.55) / this.imagenTecho.getWidth(null);
 		       
 		        
 		        entorno.dibujarImagen(this.imagenTecho, this.x, this.y, 0,factorEscala); 
@@ -49,7 +47,7 @@ public class Casa {
 		    
 		    // Texto identificador de la casa posicionado de forma estable
 		    entorno.cambiarFont("Arial", 10, Color.WHITE, entorno.NEGRITA);
-		    entorno.escribirTexto("C" + numero, this.x - this.ancho * 0.4, this.y - this.alto * 0.1);
+		    entorno.escribirTexto("Casa" + numero, this.x - this.ancho * 0.4, this.y - this.alto * 0.1);
 		}
 
 	
@@ -65,3 +63,6 @@ public class Casa {
 	public double getAlto() { return alto; }
 }
 
+
+
+//guarda la posicion (x, y),  ancho, alto, numero identificador, imagen de casa 1 o 2 segun el tipo de techo, dibujo en pantalla adaptando su escala xq sino se deformaba, un rectangulo por si falla la imagen , un texto identificador (ej: C1 ) arriba de las casas, colisiones si algo toca los limites de la casa
