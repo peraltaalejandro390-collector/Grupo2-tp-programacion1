@@ -1,5 +1,6 @@
 package juego;
 
+
 import java.awt.Color;
 import java.awt.Image;
 
@@ -58,3 +59,4 @@ public class Negocio {
 	public double getAncho() { return ancho; }
 	public double getAlto() { return alto; }
 }
+
