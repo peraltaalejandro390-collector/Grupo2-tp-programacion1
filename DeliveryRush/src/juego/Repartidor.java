@@ -2,7 +2,6 @@ package juego;
 import java.awt.Image;
 import entorno.Entorno;
 public class Repartidor {
-	// Atributos privados
 	private double x;
 	private double y;
 	private double ancho;
@@ -15,8 +14,8 @@ public class Repartidor {
 	//imagenes de estado
 	private final Image arriba = entorno.Herramientas.cargarImagen("juego/repartidor_arriba.png");
 	private final Image abajo = entorno.Herramientas.cargarImagen("juego/repartidor_abajo.png");
-	private final Image derecha = entorno.Herramientas.cargarImagen("juego/repartidor_izquierda.png");//esaba al reves 
-	private final Image izquierda = entorno.Herramientas.cargarImagen("juego/repartidor_derecha.png");
+	private final Image derecha = entorno.Herramientas.cargarImagen("juego/repartidor_derecha.png");
+	private final Image izquierda = entorno.Herramientas.cargarImagen("juego/repartidor_izquierda.png");
 	//tamaño del repartidor
 	private double escala;
 	
@@ -29,49 +28,39 @@ public class Repartidor {
 		this.vidas=3;
 		this.estadosRepartidos=this.derecha;
 	    this.ultimaDireccion = 3;  
-	    this.ancho = 21.0;
-	    this.alto = 21.0;
-	    
+		
 	}
-	public void moverArriba(Ciudad ciudad ) {
+	public void moverArriba() {
 	    this.ultimaDireccion = 0;
 	    this.estadosRepartidos = this.arriba;
-	  
-	    Double nuevo_y = this.y - this.velocidad;
-	   
-	    if(nuevo_y > 16 && !ciudad.hayColisiones(x, nuevo_y, ancho, alto)) {
-	    	this.y=nuevo_y;
-	    	
+	    if (this.y - this.velocidad > 55) {
+	        this.y -= this.velocidad;
 	    }
 	}
 
-	public void moverAbajo(Ciudad ciudad) {
+	public void moverAbajo() {
 	    this.ultimaDireccion = 1;
 	    this.estadosRepartidos = this.abajo;
-	    double nuevo_y = this.y + this.velocidad;
-	    if (nuevo_y < 580 && !ciudad.hayColisiones(this.x, nuevo_y, this.ancho, this.alto)) {
-	        this.y = nuevo_y;
+	    if (this.y + this.velocidad < 580) {
+	        this.y += this.velocidad;
 	    }
 	}
 
-	public void moverIzquierda(Ciudad ciudad) {
+	public void moverIzquierda() {
 	    this.ultimaDireccion = 2;
 	    this.estadosRepartidos = this.izquierda;
-	    double nuevo_x = this.x - this.velocidad;
-	    if (nuevo_x > 16 &&!ciudad.hayColisiones(nuevo_x, this.y, this.ancho, this.alto)) {
-	        this.x = nuevo_x;
+	    if (this.x - this.velocidad > 20) {
+	        this.x -= this.velocidad;
 	    }
 	}
 
-	public void moverDerecha(Ciudad ciudad) {
+	public void moverDerecha() {
 	    this.ultimaDireccion = 3;
 	    this.estadosRepartidos = this.derecha;
-	    double nuevo_x = this.x + this.velocidad;
-	    if (nuevo_x < 784  && !ciudad.hayColisiones(nuevo_x, this.y, this.ancho, this.alto)) {
-	        this.x = nuevo_x;
+	    if (this.x + this.velocidad < 780) {
+	        this.x += this.velocidad;
 	    }
 	}
-
 	public void dibujarse(Entorno entorno) {
 	    entorno.dibujarImagen(this.estadosRepartidos, this.x, this.y, 0, this.escala);
 	}
@@ -88,5 +77,13 @@ public class Repartidor {
 	    return this.ultimaDireccion;
 	}
 	
+    public void perderVidas() {
+    	this.vidas--;
+    }
+    
+    public int getVidas() {
+        return this.vidas;
+    }
 
 }
+
