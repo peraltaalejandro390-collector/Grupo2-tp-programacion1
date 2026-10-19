@@ -1,7 +1,6 @@
 package juego;
 
 public class Enemigo {
-	// Atributos privados
 	private double x;
 	private double y;
 	private double ancho;
@@ -19,10 +18,4 @@ public class Enemigo {
 		this.puedeDejarBombas = puedeDejarBombas;
 	}
 
-	// Métodos a implementar:
-	// - moverse(Ciudad ciudad)
-	// - dibujarse(Entorno entorno)
-	// - intentarSoltarBomba()
-	// - colisionaCon(Repartidor repartidor)
-	// - getters y setters
 }
