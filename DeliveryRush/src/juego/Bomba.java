@@ -1,7 +1,6 @@
 package juego;
 
 public class Bomba {
-	// Atributos privados
 	private double x;
 	private double y;
 	private int ticksParaExplotar;
@@ -15,12 +14,4 @@ public class Bomba {
 		this.x = x;
 		this.y = y;
 	}
-
-	// Métodos a implementar:
-	// - actualizar()
-	// - dibujarse(Entorno entorno)
-	// - estaExplotando()
-	// - estaTerminada()
-	// - alcanzaA(Repartidor repartidor)
-	// - getters y setters
 }
