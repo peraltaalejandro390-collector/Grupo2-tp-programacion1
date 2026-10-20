@@ -7,7 +7,6 @@ import entorno.InterfaceJuego;
 public class Juego extends InterfaceJuego {
 	private Entorno entorno;
 
-	//variables y métodos
 	private Ciudad ciudad;
 	private Repartidor repartidor;
 	private Enemigo[] enemigos;
@@ -15,114 +14,236 @@ public class Juego extends InterfaceJuego {
 	private Bomba[] bombas;
 	private Pedido pedidoActual;
 
-	//estadísticas y estados
 	private int tiempoTranscurrido;
 	private int pedidosEntregados;
 	private int pedidosPerdidos;
 	private int enemigosEliminados;
+	private int ticksParaCerrar = 150;
 
 	Juego() {
 		this.entorno = new Entorno(this, "Delivery Rush - Programacion I UNGS", 800, 600);
-		this.repartidor = new Repartidor(400, 500);
+		this.ciudad = new Ciudad();
+		this.repartidor = new Repartidor(400, 584);
+
+		this.enemigos = new Enemigo[4];
+		for (int i = 0; i < this.enemigos.length; i++) {
+			this.enemigos[i] = new Enemigo();
+		}
+
+		Casa destino = this.ciudad.obtenerCasaAleatoria();
+		Negocio origen = this.ciudad.obtenerNegocioAleatorio();
+		if (destino != null && origen != null) {
+			this.pedidoActual = new Pedido(destino, origen);
+		}
+
 		this.entorno.iniciar();
 	}
 
 	public void tick() {
-		//movimiento
+		if (FinDelJuego()) {
+			return;
+		}
+
+		this.tiempoTranscurrido++;
+		this.repartidor.actualizar();
+
+		movimiento();
+		mouse();
+		actualizarPedido();
+		actualizarEnemigos();
+		actualizarProyectil();
+
+		dibujar();
+	}
+
+	//condiciones de victoria y derrota
+	private boolean FinDelJuego() {
+		// Condicion de derrota
+		if (this.repartidor.getVidas() <= 0 || this.pedidosPerdidos >= 5) {
+			entorno.dibujarRectangulo(400, 300, 800, 600, 0, Color.BLACK);
+			entorno.cambiarFont("Arial", 36, Color.RED);
+			entorno.escribirTexto("¡HAS PERDIDO!", 260, 280);
+			entorno.cambiarFont("Arial", 16, Color.WHITE);
+			if (this.repartidor.getVidas() <= 0) {
+				entorno.escribirTexto("Te quedaste sin vidas.", 315, 330);
+			} else {
+				entorno.escribirTexto("Perdiste demasiados pedidos.", 290, 330);
+			}
+
+			this.ticksParaCerrar--;
+			if (this.ticksParaCerrar <= 0) {
+				System.exit(0);
+			}
+			return true;
+		}
+		//Condición de victoria
+		if (this.pedidosEntregados >= 5) {
+			entorno.dibujarRectangulo(400, 300, 800, 600, 0, Color.BLACK);
+			entorno.cambiarFont("Arial", 36, Color.GREEN);
+			entorno.escribirTexto("¡HAS GANADO!", 270, 280);
+			entorno.cambiarFont("Arial", 16, Color.WHITE);
+			entorno.escribirTexto("¡Completaste 5 pedidos con éxito!", 275, 330);
+
+			this.ticksParaCerrar--;
+			if (this.ticksParaCerrar <= 0) {
+				System.exit(0);
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	//Manejo de teclado
+	private void movimiento() {
 		if (entorno.estaPresionada('w') || entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
-		    repartidor.moverArriba();
+			this.repartidor.moverArriba(this.ciudad);
 		}
 		if (entorno.estaPresionada('s') || entorno.estaPresionada(entorno.TECLA_ABAJO)) {
-		    repartidor.moverAbajo();
+			this.repartidor.moverAbajo(this.ciudad);
 		}
 		if (entorno.estaPresionada('a') || entorno.estaPresionada(entorno.TECLA_IZQUIERDA)) {
-		    repartidor.moverIzquierda();
+			this.repartidor.moverIzquierda(this.ciudad);
 		}
 		if (entorno.estaPresionada('d') || entorno.estaPresionada(entorno.TECLA_DERECHA)) {
-		    repartidor.moverDerecha();
+			this.repartidor.moverDerecha(this.ciudad);
 		}
-		tiempoTranscurrido++;
+	}
 
-		//Dibujar en pantalla (repartidor):
-		repartidor.dibujarse(this.entorno);
-		//disparar
+	//Manejo de mouse
+	private void mouse() {
 		if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)) {
-		    if (this.proyectil == null) {
-		        this.proyectil = new Proyectil(repartidor.getX(), repartidor.getY(), repartidor.getUltimaDireccion());
-		    }
+			if (this.proyectil == null) {
+				this.proyectil = new Proyectil(this.repartidor.getX(), this.repartidor.getY(), this.repartidor.getUltimaDireccion());
+			}
 		}
+		if (entorno.sePresionoBoton(entorno.BOTON_DERECHO) && this.pedidoActual != null) {
+			if (this.pedidoActual.interactuar(this.repartidor)) {
+				this.pedidosEntregados++;
+				this.pedidoActual = null;
+			}
+		}
+	}
 
-		//ACTUALIZAR Y DIBUJAR PROYECTIL
+	// Actualizacion del ciclo de vida del pedido
+	private void actualizarPedido() {
+		if (this.pedidoActual == null) {
+			Casa destino = this.ciudad.obtenerCasaAleatoria();
+			Negocio origen = this.ciudad.obtenerNegocioAleatorio();
+			if (destino != null && origen != null) {
+				this.pedidoActual = new Pedido(destino, origen);
+			}
+		} else {
+			this.pedidoActual.actualizar();
+
+			if (this.pedidoActual.getEstado() == Pedido.ESTADO_PERDIDO) {
+				this.pedidosPerdidos++;
+				this.pedidoActual = null;
+			}
+		}
+	}
+
+	//Actualizacion y colisiones de los enemigos
+	private void actualizarEnemigos() {
+		for (int i = 0; i < this.enemigos.length; i++) {
+			if (this.enemigos[i] == null) {
+				this.enemigos[i] = new Enemigo();
+			} else {
+				this.enemigos[i].moverse();
+
+				//Colision enemigo con repartidor
+				if (this.enemigos[i].colisionaCon(this.repartidor.getX(), this.repartidor.getY())) {
+					if (!this.repartidor.esInvulnerable()) {
+						this.repartidor.perderVidas();
+
+						//Si llevaba un pedido en camino, lo pierde
+						if (this.pedidoActual != null && this.pedidoActual.getEstado() == Pedido.ESTADO_EN_CAMINO) {
+							this.pedidosPerdidos++;
+							this.pedidoActual = null;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//Actualizacion y colisiones del proyectil
+	private void actualizarProyectil() {
 		if (this.proyectil != null) {
-		    this.proyectil.avanzar();
-		    this.proyectil.dibujarse(this.entorno);
+			this.proyectil.avanzar();
 
-		    //si sale de pantalla se hace null
-		    if (this.proyectil.fueraDeLimites(this.entorno)) {
-		        this.proyectil = null;
-		    }
+			//Colision de proyectil con enemigos
+			for (int i = 0; i < this.enemigos.length; i++) {
+				if (this.enemigos[i] != null && this.enemigos[i].colisionaCon(this.proyectil.getX(), this.proyectil.getY())) {
+					this.enemigos[i] = null;
+					this.proyectil = null;
+					this.enemigosEliminados++;
+					break;
+				}
+			}
+
+			if (this.proyectil != null && this.proyectil.fueraDeLimites(this.entorno)) {
+				this.proyectil = null;
+			}
 		}
-		
-		//actualizar y dibujar el pedido si existe
+	}
+
+	private void dibujar() {
+		this.ciudad.dibujarse(this.entorno);
+
 		if (this.pedidoActual != null) {
-		    this.pedidoActual.actualizar();
-		    this.pedidoActual.dibujar(this.entorno);
+			this.pedidoActual.dibujar(this.entorno);
 		}
 
-		//clic derecho del mouse para recoger o entregar:
-		if (entorno.sePresionoBoton(entorno.BOTON_DERECHO)) {
-		    if (this.pedidoActual != null) {
-		        //si está esperando en el negocio y el repartidor está cerca
-		        if (this.pedidoActual.getEstado() == Pedido.ESTADO_ESPERANDO 
-		            && this.pedidoActual.repartidorCercaNegocio(this.repartidor)) {
-		            this.pedidoActual.recoger();
-		        }
-		        //si va en camino y el repartidor llego a la casa:
-		        else if (this.pedidoActual.getEstado() == Pedido.ESTADO_EN_CAMINO 
-		            && this.pedidoActual.repartidorCercaDeCasa(this.repartidor)) {
-		            this.pedidoActual.entregar();
-		            this.pedidosEntregados++;
-		        }
-		    }
+		for (int i = 0; i < this.enemigos.length; i++) {
+			if (this.enemigos[i] != null) {
+				this.enemigos[i].dibujarse(this.entorno);
+			}
 		}
 
-		entorno.cambiarFont("Arial", 12, java.awt.Color.WHITE);
+		if (this.proyectil != null) {
+			this.proyectil.dibujarse(this.entorno);
+		}
 
-		//Tiempo 
+		this.repartidor.dibujarse(this.entorno);
+
+		barraSuperior();
+	}
+
+	//Barra superior de estadísticas
+	private void barraSuperior() {
+		entorno.dibujarRectangulo(400, 20, 800, 40, 0, Color.BLACK);
+		entorno.cambiarFont("Arial", 12, Color.WHITE);
+
+		//Tiempo transcurrido
 		int segTotales = this.tiempoTranscurrido / 50;
 		int min = segTotales / 60;
 		int seg = segTotales % 60;
 		String reloj = String.format("%02d:%02d", min, seg);
-		entorno.escribirTexto("Tiempo: " + reloj, 20, 25);
-
+		entorno.escribirTexto("Tiempo: " + reloj, 15, 25);
 
 		//Vidas
-		entorno.escribirTexto("Vidas: " + this.repartidor.getVidas(), 140, 25);
+		entorno.escribirTexto("Vidas: " + this.repartidor.getVidas(), 130, 25);
 
-		//Entregados y Perdidos
-		entorno.escribirTexto("Entregados: " + this.pedidosEntregados, 230, 25);
-		entorno.escribirTexto("Perdidos: " + this.pedidosPerdidos, 360, 25);
+		//Pedidos entregados y perdidos
+		entorno.escribirTexto("Entregados: " + this.pedidosEntregados, 215, 25);
+		entorno.escribirTexto("Perdidos: " + this.pedidosPerdidos, 335, 25);
 
-		//Tiempo restante del pedido (si hay activo)
+		//Enemigos eliminados
+		entorno.escribirTexto("Eliminados: " + this.enemigosEliminados, 445, 25);
+
+		//Estado del pedido actual
 		if (this.pedidoActual != null) {
-		    entorno.cambiarFont("Arial", 12, java.awt.Color.YELLOW);
-		    entorno.escribirTexto("Tiempo Pedido: " + this.pedidoActual.getTiempoRestanteSegundos() + "s", 500, 25);
+			entorno.cambiarFont("Arial", 12, Color.YELLOW);
+			if (this.pedidoActual.getEstado() == Pedido.ESTADO_ESPERANDO) {
+				entorno.escribirTexto("Pedido: Esperando (" + this.pedidoActual.getTiempoRestanteSegundos() + "s)", 560, 25);
+			} else if (this.pedidoActual.getEstado() == Pedido.ESTADO_EN_CAMINO) {
+				entorno.escribirTexto("Pedido: En camino (" + this.pedidoActual.getTiempoRestanteSegundos() + "s)", 560, 25);
+			}
+		} else {
+			entorno.cambiarFont("Arial", 12, Color.GRAY);
+			entorno.escribirTexto("Pedido: Ninguno", 560, 25);
 		}
-		//al vencerse el tiempo:
-		if (this.pedidoActual.getEstado() == Pedido.ESTADO_PERDIDO) {
-		    this.pedidosPerdidos++;
-		    this.pedidoActual = null; 
-		}
-
-		//al entregar
-		else if (this.pedidoActual.getEstado() == Pedido.ESTADO_EN_CAMINO 
-		    && this.pedidoActual.repartidorCercaDeCasa(this.repartidor)) {
-		    this.pedidoActual.entregar();
-		    this.pedidosEntregados++;
-		    this.pedidoActual = null; 
-		}
-		
-
 	}
 
 	@SuppressWarnings("unused")
@@ -130,4 +251,3 @@ public class Juego extends InterfaceJuego {
 		Juego juego = new Juego();
 	}
 }
-
