@@ -6,11 +6,11 @@ import entorno.Entorno;
 
 public class Pedido {
 	//estados 
-	public static final int ESTADO_REALIZADO = 0;
-	public static final int ESTADO_ESPERANDO = 1;
-	public static final int ESTADO_EN_CAMINO = 2;
-	public static final int ESTADO_ENTREGADO = 3;
-	public static final int ESTADO_PERDIDO = 4;
+	public static int ESTADO_REALIZADO = 0;
+	public static int ESTADO_ESPERANDO = 1;
+	public static int ESTADO_EN_CAMINO = 2;
+	public static int ESTADO_ENTREGADO = 3;
+	public static int ESTADO_PERDIDO = 4;
 
 	private Casa casaDestino;
 	private Negocio negocioOrigen;
@@ -26,8 +26,8 @@ public class Pedido {
 		this.casaDestino = casaDestino;
 		this.negocioOrigen = negocioOrigen;
 		this.estado=ESTADO_ESPERANDO;
-		this.tiempoRestante=1500; //30 segundos
-		this.escalaFlechas=0.08;
+		this.tiempoRestante=1500; //30seg
+		this.escalaFlechas=0.16;
 		
 	}
 	
@@ -62,14 +62,14 @@ public class Pedido {
 	public void dibujar(Entorno entorno) {
 		if(this.estado==ESTADO_ESPERANDO && this.negocioOrigen!=null) {
 			double flechaX=this.negocioOrigen.getX();
-			double flechaY=this.negocioOrigen.getY()-30;
+			double flechaY=this.negocioOrigen.getY()-28;
 			entorno.dibujarImagen(this.flechaVerde, flechaX, flechaY,0,this.escalaFlechas);
 			
 		}
         else if (this.estado == ESTADO_EN_CAMINO && this.casaDestino != null) {
-            //dibujar la flecha roja un poquito por encima de la casa
+            //dibujar la flecha roja
             double flechaX = this.casaDestino.getX();
-            double flechaY = this.casaDestino.getY() - 30;
+            double flechaY = this.casaDestino.getY() - 28;
             entorno.dibujarImagen(this.flechaRoja, flechaX, flechaY, 0, this.escalaFlechas);
         }
 		
@@ -79,7 +79,7 @@ public class Pedido {
 		if(repartidor==null || this.negocioOrigen==null) return false;
 		double difX=Math.abs(repartidor.getX()-this.negocioOrigen.getX());
 		double difY=Math.abs(repartidor.getY()-this.negocioOrigen.getY());
-		return difX<45 && difY<45;
+		return difX <= 75 && difY <= 75;
 	}
 	
 	//true si esta cerca de casa
@@ -90,7 +90,18 @@ public class Pedido {
 	    double difX = Math.abs(repartidor.getX() - this.casaDestino.getX());
 	    double difY = Math.abs(repartidor.getY() - this.casaDestino.getY());
 	    
-	    return difX < 45 && difY < 45;
+	    return difX <= 75 && difY <= 75;
+	}
+	
+	public boolean interactuar(Repartidor repartidor) {
+	    if (this.estado == ESTADO_ESPERANDO && repartidorCercaNegocio(repartidor)) {
+	        recoger();
+	        return false; // No se entrego aun, se recogio
+	    } else if (this.estado == ESTADO_EN_CAMINO && repartidorCercaDeCasa(repartidor)) {
+	        entregar();
+	        return true; //Se completo la entrega
+	    }
+	    return false;
 	}
 	
     public int getEstado() {
@@ -112,4 +123,5 @@ public class Pedido {
 
 
 }
+
 
