@@ -9,6 +9,7 @@ public class Repartidor {
 	private double velocidad;
 	private int vidas;
 	private int ultimaDireccion;// 0: arriba, 1: abajo, 2: izquierda, 3: derecha
+	private int ticksInvulnerable = 0;
     //imagen inicial
 	private Image estadosRepartidos;
 	//imagenes de estado
@@ -28,40 +29,91 @@ public class Repartidor {
 		this.vidas=3;
 		this.estadosRepartidos=this.derecha;
 	    this.ultimaDireccion = 3;  
-		
+		this.ancho = 20;
+		this.alto = 24;
+		this.ticksInvulnerable = 150;
 	}
-	public void moverArriba() {
+	public void moverArriba(Ciudad ciudad) {
 	    this.ultimaDireccion = 0;
 	    this.estadosRepartidos = this.arriba;
-	    if (this.y - this.velocidad > 55) {
-	        this.y -= this.velocidad;
+	    double nuevoY = this.y - this.velocidad;
+	    if (nuevoY - this.alto / 2.0 > 40) {
+	        if (ciudad == null || !ciudad.hayColisiones(this.x, nuevoY, this.ancho, this.alto)) {
+	            this.y = nuevoY;
+	        }
 	    }
+	}
+
+	public void moverAbajo(Ciudad ciudad) {
+	    this.ultimaDireccion = 1;
+	    this.estadosRepartidos = this.abajo;
+	    double nuevoY = this.y + this.velocidad;
+	    if (nuevoY + this.alto / 2.0 < 595) {
+	        if (ciudad == null || !ciudad.hayColisiones(this.x, nuevoY, this.ancho, this.alto)) {
+	            this.y = nuevoY;
+	        }
+	    }
+	}
+
+	public void moverIzquierda(Ciudad ciudad) {
+	    this.ultimaDireccion = 2;
+	    this.estadosRepartidos = this.izquierda;
+	    double nuevoX = this.x - this.velocidad;
+	    if (nuevoX - this.ancho / 2.0 > 5) {
+	        if (ciudad == null || !ciudad.hayColisiones(nuevoX, this.y, this.ancho, this.alto)) {
+	            this.x = nuevoX;
+	        }
+	    }
+	}
+
+	public void moverDerecha(Ciudad ciudad) {
+	    this.ultimaDireccion = 3;
+	    this.estadosRepartidos = this.derecha;
+	    double nuevoX = this.x + this.velocidad;
+	    if (nuevoX + this.ancho / 2.0 < 795) {
+	        if (ciudad == null || !ciudad.hayColisiones(nuevoX, this.y, this.ancho, this.alto)) {
+	            this.x = nuevoX;
+	        }
+	    }
+	}
+
+	public void moverArriba() {
+	    moverArriba(null);
 	}
 
 	public void moverAbajo() {
-	    this.ultimaDireccion = 1;
-	    this.estadosRepartidos = this.abajo;
-	    if (this.y + this.velocidad < 580) {
-	        this.y += this.velocidad;
-	    }
+	    moverAbajo(null);
 	}
 
 	public void moverIzquierda() {
-	    this.ultimaDireccion = 2;
-	    this.estadosRepartidos = this.izquierda;
-	    if (this.x - this.velocidad > 20) {
-	        this.x -= this.velocidad;
-	    }
+	    moverIzquierda(null);
 	}
 
 	public void moverDerecha() {
-	    this.ultimaDireccion = 3;
-	    this.estadosRepartidos = this.derecha;
-	    if (this.x + this.velocidad < 780) {
-	        this.x += this.velocidad;
+	    moverDerecha(null);
+	}
+	
+	public void perderVidas() {
+	    if (this.ticksInvulnerable <= 0) {
+	        this.vidas--;
+	        this.ticksInvulnerable = 100; //inmunidad
 	    }
 	}
+
+	public boolean esInvulnerable() {
+	    return this.ticksInvulnerable > 0;
+	}
+
+	public void actualizar() {
+	    if (this.ticksInvulnerable > 0) {
+	        this.ticksInvulnerable--;
+	    }
+	}
+	
 	public void dibujarse(Entorno entorno) {
+	    if (this.ticksInvulnerable > 0 && (this.ticksInvulnerable / 6) % 2 == 0) {
+	        return; 
+	    }
 	    entorno.dibujarImagen(this.estadosRepartidos, this.x, this.y, 0, this.escala);
 	}
 	
@@ -77,13 +129,17 @@ public class Repartidor {
 	    return this.ultimaDireccion;
 	}
 	
-    public void perderVidas() {
-    	this.vidas--;
-    }
     
     public int getVidas() {
         return this.vidas;
     }
 
-}
+    public double getAncho() {
+        return this.ancho;
+    }
 
+    public double getAlto() {
+        return this.alto;
+    }
+
+}
