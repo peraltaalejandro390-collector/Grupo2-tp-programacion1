@@ -1,121 +1,100 @@
+package juego;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.util.Random;
 import entorno.Entorno;
-
 
 public class Ciudad {
     private static final int FILAS_CUADRAS = 4;
     private static final int COLUMNAS_CUADRAS = 4;
     
-    private static final double ANCHO_CALLE = 32.0;
-    private static final double ALTO_CALLE = 32.0;
+    // Coordenadas centrales de las calles
+    public static final double[] CALLES_X = {25.0, 208.0, 400.0, 592.0, 775.0};
+    public static final double[] CALLES_Y = {64.0, 194.0, 324.0, 454.0, 584.0};
     
-    private static final double ANCHO_CUADRA = 160.0;
-    private static final double ALTO_CUADRA = 98.0;
+    // Ancho y alto de las calles 
+    public static final double ANCHO_CALLE = 46.0;
+    public static final double ALTO_CALLE = 42.0;
 
-    // dimensiones exactas de cada propiedad individual (casa o negocio)
-    private static final double ANCHO_ELEMENTO = ANCHO_CUADRA / 2.0; // 80.0
-    private static final double ALTO_ELEMENTO = ALTO_CUADRA / 2.0;  // 49.0
-    
-    
-    private static final double Y_INICIO_MAPA = 32.0; 
+    // Dimensiones de cada casa o negocio
+    private static final double ANCHO_PROPIEDAD = 50.0;
+    private static final double ALTO_PROPIEDAD = 34.0;
 
     private Casa[] casas;
     private Negocio[] negocios;
-   
-	private Random random;
-	private Image fondoCuadra;
-	
-	
+    private Random random;
+    private Image fondoCuadra;
+    private Image imagenCalle;
+
     public Ciudad() {
-    	this.random = new Random();
+        this.random = new Random();
         this.casas = new Casa[48];
         this.negocios = new Negocio[16];
         this.fondoCuadra = entorno.Herramientas.cargarImagen("juego/fondo_casas.png");
-                generarCiudad();
+        this.imagenCalle = entorno.Herramientas.cargarImagen("juego/calle.png");
+        generarCiudad();
     }
 
     private void generarCiudad() {
-    	String[] nombres = {"Pizzeria", "Hamburguesas", "Heladeria", "Rotiseria", "kiosco", "empanadas", "tortas"};
+        int c = 0;
+        int n = 0;
+        int contadorPosicion = 1;
 
-    	int c = 0;
-    	int n = 0;
-    	int contadorPosicion = 1;
+        // Separacion para agrupar las 4 casas/negocio 
+        double dx = 27.0;
+        double dy = 18.0;
 
-    	// divide el mapa en cuadras grandes, y luego divide cada cuadra en una minicuadrícula de 2x2 (4 espacios en total)
-    	for (int fila = 0; fila < FILAS_CUADRAS; fila++) {
-    	    for (int col = 0; col < COLUMNAS_CUADRAS; col++) {
-    	        
-    	        double inicioX = ANCHO_CALLE + (col * (ANCHO_CUADRA + ANCHO_CALLE));
-    	        double inicioY = Y_INICIO_MAPA + (fila * (ALTO_CUADRA + ALTO_CALLE));
-    	        
-    	        int subNegocio = random.nextInt(4); // genera un número del 0 al 3 
-    	        int subCasillero = 0;
+        for (int fila = 0; fila < FILAS_CUADRAS; fila++) {
+            for (int col = 0; col < COLUMNAS_CUADRAS; col++) {
+                // Centro de la manzana entre las calles 
+                double centroCuadraX = (CALLES_X[col] + CALLES_X[col + 1]) / 2.0;
+                double centroCuadraY = (CALLES_Y[fila] + CALLES_Y[fila + 1]) / 2.0;
 
-    	        for (int subFila = 0; subFila < 2; subFila++) {
-    	            for (int subCol = 0; subCol < 2; subCol++) {
-    	            	
-    	                double posX = inicioX + (subCol * ANCHO_ELEMENTO) + (ANCHO_ELEMENTO / 2.0);
-    	                double posY = inicioY + (subFila * ALTO_ELEMENTO) + (ALTO_ELEMENTO / 2.0);
+                int subNegocio = random.nextInt(4); // 0 a 3
+                int subCasillero = 0;
 
-    	                if (subCasillero == subNegocio) {
-    	                    // Elegimos el nombre comercial que le toca de la lista (va rotando de 0 a 6)
-    	                    String nombreComercial = nombres[n % 7];
+                for (int subFila = 0; subFila < 2; subFila++) {
+                    for (int subCol = 0; subCol < 2; subCol++) {
+                        // Posicion concentrada en el centro de la manzana
+                        double posX = centroCuadraX + (subCol == 0 ? -dx : dx);
+                        double posY = centroCuadraY + (subFila == 0 ? -dy : dy);
 
-    	                    // Creamos el Negocio con su tamaño y posición en la lista actual 'n'
-    	                    this.negocios[n] = new Negocio(posX, posY, ANCHO_ELEMENTO, ALTO_ELEMENTO, contadorPosicion, nombreComercial);
+                        if (subCasillero == subNegocio) {
+                            this.negocios[n] = new Negocio(posX, posY, ANCHO_PROPIEDAD, ALTO_PROPIEDAD, contadorPosicion);
+                            n++;
+                        } else {
+                            int tipo = (random.nextInt(2) == 0) ? 1 : 2;
+                            this.casas[c] = new Casa(posX, posY, ANCHO_PROPIEDAD, ALTO_PROPIEDAD, contadorPosicion, tipo);
+                            c++;
+                        }
 
-    	                    // Sumamos 1 para que el próximo negocio se guarde en el siguiente casillero
-    	                    n = n + 1;
+                        contadorPosicion++;
+                        subCasillero++;
+                    }
+                }
+            }
+        }
+    }
 
-    	                } else {
-    	                    int tipo;
-    	                    int numeroAleatorio = random.nextInt(2); // Genera 0 o 1
+    public void dibujarse(Entorno entorno) {
+        //pasto de fondo
+        if (this.fondoCuadra != null) {
+            double escalaCesped = 820.0 / (double) this.fondoCuadra.getWidth(null);
+            entorno.dibujarImagen(this.fondoCuadra, 400, 320, 0, escalaCesped);
+        }
 
-    	                    if (numeroAleatorio == 0) {
-    	                        tipo = 1;
-    	                    } else {
-    	                        tipo = 2;
-    	                    }
-    	                    double altoFinal = ALTO_ELEMENTO;       
-                            double posYFinal = posY;                
+        //Calles
+        if (this.imagenCalle != null) {
+            entorno.dibujarImagen(this.imagenCalle, 400, 300, 0, 1.0);
+        } else {
+            entorno.dibujarRectangulo(400, 320, 800, 560, 0, new Color(55, 55, 55));
+        }
 
-
-    	                    // 3. Creamos la casa con los datos finales y avanzamos el contador
-    	                    this.casas[c] = new Casa(posX, posYFinal, ANCHO_ELEMENTO, altoFinal, contadorPosicion, tipo);
-    	                    c = c + 1;
-    	                    } 
-
-    	                // Esto tiene que ejecutarse SIEMPRE (tanto para casas como para negocios)
-    	                contadorPosicion++;
-    	                subCasillero++;
-    	            }   
-    	        }
-    	        }
-    	}
-    	}
-    public void dibujarse(Entorno entorno ) {
-    	double anchoOrig=310.0;
-    	
-    	        // Calculamos el centro geométrico exacto de la manzana completa
-    	        double escala = ANCHO_CALLE /anchoOrig ;
-           
-    	        
-    	         for (int fila = 0; fila < FILAS_CUADRAS; fila++) {
-    	    	    for (int col = 0; col < COLUMNAS_CUADRAS; col++) {
-    	    	        // Calculamos el centro geométrico exacto de la manzana completa
-    	    	        double centroCuadraX = ANCHO_CALLE + (col * (ANCHO_CUADRA + ANCHO_CALLE)) + (ANCHO_CUADRA / 2.0);
-    	    	        double centroCuadraY = Y_INICIO_MAPA + (fila * (ALTO_CUADRA + ALTO_CALLE)) + (ALTO_CUADRA / 2.0);
-    	    	        
-    	    	        // CORRECCIÓN: Dibujamos la imagen aplicando la escala X e Y calculadas para que no sea gigante
-    	    	        entorno.dibujarImagen(this.fondoCuadra, centroCuadraX, centroCuadraY, 0,escala );
-    	    	    }
-    	    	}
-    	
+        //Casas y negocios agrupados sobre el pasto de cada manzana
         for (int i = 0; i < casas.length; i++) {
             if (casas[i] != null) {
-            	 casas[i].dibujarse(entorno);
+                casas[i].dibujarse(entorno);
             }
         }
         for (int i = 0; i < negocios.length; i++) {
@@ -125,18 +104,18 @@ public class Ciudad {
         }
     }
     public boolean hayColisiones(double x, double y, double ancho, double alto) {
-    	 // Colisión con Casas (Revisa los bordes del personaje vs bordes de las casas)
+        //Colision con Casas
         for (int i = 0; i < casas.length; i++) {
             Casa c = casas[i];
             if (c != null) {
-                if (Math.abs(x - c.getX()) < (ancho + c.getAncho()) / 2.0 && //• límite exacto donde ambos cuerpos se empiezan a tocar.
+                if (Math.abs(x - c.getX()) < (ancho + c.getAncho()) / 2.0 &&
                     Math.abs(y - c.getY()) < (alto + c.getAlto()) / 2.0) {
                     return true;
                 }
             }
         }
         
-     // Colisión con Negocios (Revisa los bordes del personaje vs bordes de los negocios)
+        //colision con Negocios
         for (int i = 0; i < negocios.length; i++) {
             Negocio n = negocios[i];
             if (n != null) {
@@ -146,16 +125,26 @@ public class Ciudad {
                 }
             }
         }
-		return false;
+        return false;
     }
 
+    public Casa obtenerCasaAleatoria() {
+        if (this.casas == null || this.casas.length == 0) {
+            return null;
+        }
+        int posicion = this.random.nextInt(this.casas.length);
+        return this.casas[posicion];
+    }
 
-    
+    public Negocio obtenerNegocioAleatorio() {
+        if (this.negocios == null || this.negocios.length == 0) {
+            return null;
+        }
+        int posicion = this.random.nextInt(this.negocios.length);
+        return this.negocios[posicion];
+    }
 
     public Casa[] getCasas() { return casas; }
     public Negocio[] getNegocios() { return negocios; }
-
-
-	
-
 }
+
