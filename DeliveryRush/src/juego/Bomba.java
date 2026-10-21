@@ -39,7 +39,7 @@ public class Bomba {
 		this.imgExplosion = Herramientas.cargarImagen("juego/explosion.png");
 	}
 
-	// Actualiza el ciclo de vida de la bomba (reloj interno)
+	// Actualiza el ciclo de vida de la bomba 
 	public void actualizar() {
 		if (!exploto) {
 			this.ticksParaExplotar--;
@@ -56,7 +56,7 @@ public class Bomba {
 	// Dibuja la bomba parpadeando o el fuego de la explosión según su estado
 	public void dibujarse(Entorno entorno) {
 		if (!exploto) {
-			// Efecto visual simple de parpadeo antes de explotar
+			// Efecto visual simple de parpadeo antes de explotar((this.ticksParaExplotar / 5) % 2 == 0)) sino solo desaparece
 			if (this.ticksParaExplotar > 30 || (this.ticksParaExplotar / 5) % 2 == 0) {
 				if (this.imgBomba != null) {
 					entorno.dibujarImagen(this.imgBomba, this.x, this.y, 0, 0.05);
