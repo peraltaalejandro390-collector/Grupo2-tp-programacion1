@@ -6,19 +6,19 @@ import java.util.Random;
 import entorno.Entorno;
 
 public class Ciudad {
-    private static final int FILAS_CUADRAS = 4;
-    private static final int COLUMNAS_CUADRAS = 4;
+    private static int FILAS_CUADRAS = 4;
+    private static int COLUMNAS_CUADRAS = 4;
     // Coordenadas centrales de las calles
-    public static final double[] CALLES_X = {25.0, 208.0, 400.0, 592.0, 775.0};
-    public static final double[] CALLES_Y = {64.0, 194.0, 324.0, 454.0, 584.0};
+    public static double[] CALLES_X = {25.0, 208.0, 400.0, 592.0, 775.0};
+    public static double[] CALLES_Y = {64.0, 194.0, 324.0, 454.0, 584.0};
  
     // Ancho y alto de las calles 
-    public static final double ANCHO_CALLE = 46.0;
-    public static final double ALTO_CALLE = 42.0;
+    public static double ANCHO_CALLE = 46.0;
+    public static double ALTO_CALLE = 42.0;
 
     // Dimensiones de cada casa o negocio
-    private static final double ANCHO_PROPIEDAD = 50.0;
-    private static final double ALTO_PROPIEDAD = 34.0;
+    private static double ANCHO_PROPIEDAD = 50.0;
+    private static double ALTO_PROPIEDAD = 34.0;
 
     private Casa[] casas;
     private Negocio[] negocios;
