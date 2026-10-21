@@ -74,7 +74,6 @@ public class Bomba {
 			}
 		}
 	}
-
 	// Retorna verdadero si la explosión está activa causando daño en este tick
 	public boolean estaActiva() {
 		return this.exploto && this.ticksDuracionExplosion > 0;
