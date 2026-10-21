@@ -54,17 +54,29 @@ public class Ciudad {
                 int subNegocio = random.nextInt(4); // 0 a 3
                 int subCasillero = 0;
 
-                for (int subFila = 0; subFila < 2; subFila++) {
+  for (int subFila = 0; subFila < 2; subFila++) {
                     for (int subCol = 0; subCol < 2; subCol++) {
                         // Posicion concentrada en el centro de la manzana
-                        double posX = centroCuadraX + (subCol == 0 ? -dx : dx);
-                        double posY = centroCuadraY + (subFila == 0 ? -dy : dy);
+                    	double posX;
+                    	double posY;
 
+                     	if (subCol == 0) {
+                    	        posX = centroCuadraX - dx;
+                    	} else {
+                    	   	    posX = centroCuadraX + dx;
+                    	}
+
+                    	if (subFila == 0) {
+                    	    posY = centroCuadraY - dy;
+                    	} else {
+                    	     posY = centroCuadraY + dy;
+                    	}
                         if (subCasillero == subNegocio) {
                             this.negocios[n] = new Negocio(posX, posY, ANCHO_PROPIEDAD, ALTO_PROPIEDAD, contadorPosicion);
                             n++;
                         } else {
-                            int tipo = (random.nextInt(2) == 0) ? 1 : 2;
+                          int tipo = random.nextInt(2) + 1;//solo dos opciones: 0 o 1
+
                             this.casas[c] = new Casa(posX, posY, ANCHO_PROPIEDAD, ALTO_PROPIEDAD, contadorPosicion, tipo);
                             c++;
                         }
