@@ -16,10 +16,10 @@ public class Enemigo {
     private int ticksParaBomba; // Cuenta regresiva para soltar la siguiente
 
     // Imagenes
-    private Image arriba = entorno.Herramientas.cargarImagen("juego/enemigo_arriba.png");
-    private Image abajo = entorno.Herramientas.cargarImagen("juego/enemigo_abajo.png");
-    private Image derecha = entorno.Herramientas.cargarImagen("juego/enemigo_derecha.png");
-    private Image izquierda = entorno.Herramientas.cargarImagen("juego/enemigo_izquierda.png");
+    private final Image arriba = entorno.Herramientas.cargarImagen("juego/enemigo_arriba.png");
+    private final Image abajo = entorno.Herramientas.cargarImagen("juego/enemigo_abajo.png");
+    private final Image derecha = entorno.Herramientas.cargarImagen("juego/enemigo_derecha.png");
+    private final Image izquierda = entorno.Herramientas.cargarImagen("juego/enemigo_izquierda.png");
 
     private Image imagenActual;
 
