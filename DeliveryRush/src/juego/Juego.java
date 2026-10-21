@@ -29,7 +29,7 @@ public class Juego extends InterfaceJuego {
 		for (int i = 0; i < this.enemigos.length; i++) {
 			this.enemigos[i] = new Enemigo();
 		}
-
+this.bombas = new Bomba[10];
 		Casa destino = this.ciudad.obtenerCasaAleatoria();
 		Negocio origen = this.ciudad.obtenerNegocioAleatorio();
 		if (destino != null && origen != null) {
@@ -52,7 +52,7 @@ public class Juego extends InterfaceJuego {
 		actualizarPedido();
 		actualizarEnemigos();
 		actualizarProyectil();
-
+actualizarBombas();
 		dibujar();
 	}
 
@@ -150,7 +150,18 @@ public class Juego extends InterfaceJuego {
 				this.enemigos[i] = new Enemigo();
 			} else {
 				this.enemigos[i].moverse();
-
+//GESTIÓN DE BOMBAS
+				Bomba nuevaBomba = this.enemigos[i].intentarSoltarBomba();
+				if (nuevaBomba != null) {
+				    boolean bombaGuardada = false; // Bandera para controlar el bucle
+				    
+				    for (int j = 0; j < this.bombas.length && !bombaGuardada; j++) {
+				        if (this.bombas[j] == null) {
+				            this.bombas[j] = nuevaBomba;
+				            bombaGuardada = true;
+				        }
+				    }
+				}
 				//Colision enemigo con repartidor
 				if (this.enemigos[i].colisionaCon(this.repartidor.getX(), this.repartidor.getY())) {
 					if (!this.repartidor.esInvulnerable()) {
@@ -187,7 +198,28 @@ public class Juego extends InterfaceJuego {
 			}
 		}
 	}
+private void actualizarBombas() {
+		for (int i = 0; i < this.bombas.length; i++) {
+			if (this.bombas[i] != null) {
+				this.bombas[i].actualizar();
 
+					boolean tocoBomba = this.bombas[i].colisionaCon(repartidor.getX(), repartidor.getY(), repartidor.getAncho(), repartidor.getAlto());
+				boolean alcanzadoPorFuego = this.bombas[i].enAreaDeEfecto(repartidor.getX(), repartidor.getY(), repartidor.getAncho(), repartidor.getAlto());
+				
+				if (tocoBomba || alcanzadoPorFuego) {
+						if (this.repartidor.getVidas() > 0) {
+						this.repartidor.actualizar();
+						this.repartidor.perderVidas();
+					
+					}
+				}
+
+					if (this.bombas[i].terminada()) {
+					this.bombas[i] = null;
+				}
+			}
+		}
+	}
 	private void dibujar() {
 		this.ciudad.dibujarse(this.entorno);
 
@@ -200,7 +232,10 @@ public class Juego extends InterfaceJuego {
 				this.enemigos[i].dibujarse(this.entorno);
 			}
 		}
-
+for (int i = 0; i < this.bombas.length; i++) {
+			if (this.bombas[i] != null) {
+				this.bombas[i].dibujarse(this.entorno);
+			}
 		if (this.proyectil != null) {
 			this.proyectil.dibujarse(this.entorno);
 		}
