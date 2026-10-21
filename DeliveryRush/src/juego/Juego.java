@@ -196,6 +196,11 @@ actualizarBombas();
 			if (this.proyectil != null && this.proyectil.fueraDeLimites(this.entorno)) {
 				this.proyectil = null;
 			}
+			//Si chocó contra las casas 
+			if (this.proyectil != null && this.ciudad.hayColisiones(
+			        this.proyectil.getX(), this.proyectil.getY(),5,5)) {
+			    this.proyectil = null;
+			}
 		}
 	}
 private void actualizarBombas() {
