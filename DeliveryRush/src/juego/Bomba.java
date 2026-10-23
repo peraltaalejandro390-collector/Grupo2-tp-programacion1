@@ -15,7 +15,7 @@ public class Bomba {
 	private double anchoArea;
 	private double altoArea;
 
-	// Recursos gráficos
+	//imagenes
 	private Image imgBomba;
 	private Image imgExplosion;
 
@@ -26,7 +26,7 @@ public class Bomba {
 		
 		// 3 segundos  antes de estallar
 		this.ticksParaExplotar = 150; 
-		// La explosión se queda dibujada en pantalla 0.8 seg)
+		// La explosión se queda dibujada en pantalla 0.8 seg
 		this.ticksDuracionExplosion = 40; 
 		this.exploto = false;
 
@@ -34,12 +34,11 @@ public class Bomba {
 		this.anchoArea = 46.0;
 		this.altoArea = 100.0;
 
-		// Carga de imágenes (asegurate de tenerlas en tu carpeta de assets)
+		// Carga de imágenes
 		this.imgBomba = Herramientas.cargarImagen("juego/bomba.png");
 		this.imgExplosion = Herramientas.cargarImagen("juego/explosion.png");
 	}
 
-	// Actualiza el ciclo de vida de la bomba 
 	public void actualizar() {
 		if (!exploto) {
 			this.ticksParaExplotar--;
@@ -68,9 +67,6 @@ public class Bomba {
 			// Dibuja el rango de la explosión
 			if (this.imgExplosion != null) {
 				entorno.dibujarImagen(this.imgExplosion, this.x, this.y, 0, 0.15);
-			} else {
-				// si no encuentra la imagen
-				entorno.dibujarRectangulo(this.x, this.y, this.anchoArea, this.altoArea, 0, new Color(255, 0, 0, 150));
 			}
 		}
 	}
@@ -87,7 +83,6 @@ public class Bomba {
 	// Detecta si el repartidor colisiona con el cuerpo físico de la bomba 
 	public boolean colisionaCon(double repX, double repY, double repAncho, double repAlto) {
 		if (!exploto) {
-			// Colisión estándar con el dispositivo
 			double difX = Math.abs(this.x - repX);
 			double difY = Math.abs(this.y - repY);
 			return difX < (repAncho / 2 + 10) && difY < (repAlto / 2 + 10);
@@ -105,7 +100,6 @@ public class Bomba {
 	}
 	
 
-	// Getters necesarios
 	public double getX() { return this.x; }
 	public double getY() { return this.y; }
 	public boolean isExploto() { return this.exploto; }
