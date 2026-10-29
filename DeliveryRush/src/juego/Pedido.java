@@ -79,7 +79,7 @@ public class Pedido {
 		if(repartidor==null || this.negocioOrigen==null) return false;
 		double difX=Math.abs(repartidor.getX()-this.negocioOrigen.getX());
 		double difY=Math.abs(repartidor.getY()-this.negocioOrigen.getY());
-		return difX <= 75 && difY <= 75;
+		return difX <= 50 && difY <= 50;
 	}
 	
 	//true si esta cerca de casa
@@ -90,7 +90,7 @@ public class Pedido {
 	    double difX = Math.abs(repartidor.getX() - this.casaDestino.getX());
 	    double difY = Math.abs(repartidor.getY() - this.casaDestino.getY());
 	    
-	    return difX <= 75 && difY <= 75;
+	    return difX <= 50 && difY <= 50;
 	}
 	
 	public boolean interactuar(Repartidor repartidor) {
