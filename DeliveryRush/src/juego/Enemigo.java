@@ -25,19 +25,16 @@ public class Enemigo {
 
     
     // Constructor aleatorio: se posiciona solo en una calle al azar y elige su direccion
-    public Enemigo() {
-        double[] callesY = {64, 194, 324, 454, 584}; // Calles horizontales
-        double[] callesX = {25, 208, 400, 592, 775}; // Calles verticales
-
-        this.esHorizontal = Math.random() < 0.5;
-        this.puedeDejarBombas = Math.random() < 0.5;
-        this.ticksParaBomba = 250;
+   public Enemigo() {
+        this.esHorizontal = Math.random() < 0.5; //50% de aparicion
+        this.puedeDejarBombas = Math.random() < 0.5; //50% de aparicion
+        this.ticksParaBomba = 100;
         this.velocidad = 2.0;
         this.escala = 0.065;
 
         if (this.esHorizontal) {
-            int fila = (int)(Math.random() * callesY.length);
-            this.y = callesY[fila];
+            int fila = (int)(Math.random() * Ciudad.CALLES_Y.length);
+            this.y = Ciudad.CALLES_Y[fila];
             
             // Aparece en una de las dos puntas de la calle
             if (Math.random() < 0.5) {
@@ -50,8 +47,8 @@ public class Enemigo {
                 this.imagenActual = this.izquierda;
             }
         } else {
-            int col = (int)(Math.random() * callesX.length);
-            this.x = callesX[col];
+            int col = (int)(Math.random() * Ciudad.CALLES_X.length);
+            this.x = Ciudad.CALLES_X[col];
 
             // Aparece en una de las dos puntas de la calle
             if (Math.random() < 0.5) {
@@ -60,28 +57,6 @@ public class Enemigo {
                 this.imagenActual = this.abajo;
             } else {
                 this.y = 570;
-                this.sentido = -1;
-                this.imagenActual = this.arriba;
-            }
-        }
-    }
-
-    public void moverse() {
-        if (this.esHorizontal) {
-            this.x += this.velocidad * this.sentido;
-            if (this.x <= 25) {
-                this.sentido = 1;
-                this.imagenActual = this.derecha;
-            } else if (this.x >= 775) {
-                this.sentido = -1;
-                this.imagenActual = this.izquierda;
-            }
-        } else {
-            this.y += this.velocidad * this.sentido;
-            if (this.y <= 65) {
-                this.sentido = 1;
-                this.imagenActual = this.abajo;
-            } else if (this.y >= 575) {
                 this.sentido = -1;
                 this.imagenActual = this.arriba;
             }
