@@ -99,6 +99,9 @@ public class Repartidor {
 	        this.ticksInvulnerable = 100; //inmunidad
 	    }
 	}
+	public void morir() {
+    this.vidas = 0;
+}
 
 	public boolean esInvulnerable() {
 	    return this.ticksInvulnerable > 0;
