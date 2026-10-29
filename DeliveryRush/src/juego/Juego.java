@@ -212,11 +212,7 @@ private void actualizarBombas() {
 				boolean alcanzadoPorFuego = this.bombas[i].enAreaDeEfecto(repartidor.getX(), repartidor.getY(), repartidor.getAncho(), repartidor.getAlto());
 				
 				if (tocoBomba || alcanzadoPorFuego) {
-						if (this.repartidor.getVidas() > 0) {
-						this.repartidor.actualizar();
-						this.repartidor.perderVidas();
-					
-					}
+					this.repartidor.morir();
 				}
 
 					if (this.bombas[i].terminada()) {
